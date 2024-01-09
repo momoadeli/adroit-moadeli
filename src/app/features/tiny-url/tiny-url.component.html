@@ -1,1 +1,33 @@
-<p>tiny-url works!</p>
+<form [formGroup]="urlEntryFormGroup" (ngSubmit)="onSubmit()">
+    <mat-toolbar color="primary">
+        <span>URL Shortener</span>
+    </mat-toolbar>
+
+    <div class="container">
+        <mat-form-field appearance="fill">
+            <mat-label for="url">Enter your URL here</mat-label>
+            <input matInput formControlName="url" placeholder="https://example.com">
+            <mat-error *ngIf="urlEntryFormGroup.get('url')?.errors?.['invalidUrl']">
+                Please enter a valid URL
+            </mat-error>
+
+            <button mat-button matSuffix aria-label="Shorten URL">
+                <mat-icon>send</mat-icon>
+            </button>
+        </mat-form-field>
+
+        <mat-card>
+            <mat-card-content>
+                <p>Your Shortened URL:</p>
+                <div class="url-container">
+                    <span class="shortenedUrl">https://tiny.url/abc123</span>
+                </div>
+                <div class="copy-button">
+                    <button mat-button (click)="copyToClipboard()">
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <form>
