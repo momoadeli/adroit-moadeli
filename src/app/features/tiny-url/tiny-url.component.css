@@ -38,7 +38,7 @@ mat-form-field:last-child {
     /* Adds some space between the field and the button */
 }
 
-ƒ .url-container {
+.url-container {
     margin-bottom: 10px;
 }
 
@@ -66,4 +66,8 @@ mat-form-field:last-child {
 .tiny-url-container button {
     flex: 1;
     margin-left: 5px; /* Space between buttons */
+}
+
+.additional-card {
+    margin-top: 10px;
 }

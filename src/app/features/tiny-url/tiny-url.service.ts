@@ -47,7 +47,8 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
       url,
       tinyUrl: 'http://tinyurl.com/' + (alias ? alias : generateRandomNumericString(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH)),
       alias,
-      userName: this._currentUser.userName
+      userName: this._currentUser.userName,
+      clickCount: 0
     };
 
     this.setState({
@@ -57,6 +58,21 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
   }
 
   goToUrl(tinyUrl: string): void {
+    const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);
+
+    if (mappingIndex !== -1) {
+      const updatedMappings = [...this.state.mappings];
+      updatedMappings[mappingIndex] = {
+        ...updatedMappings[mappingIndex],
+        clickCount: updatedMappings[mappingIndex].clickCount + 1
+      };
+  
+      this.setState({
+        ...this.state,
+        mappings: updatedMappings
+      });
+    }
+    
     window.open(tinyUrl, '_blank');
   }
 
@@ -76,13 +92,6 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
       mappings: this.state.mappings.filter(m => m !== mapping)
     });
   }
-
-  // deleteTinyUrl(tinyUrl: string): void {
-  //   this.setState({
-  //     ...this.state,
-  //     mappings: this.state.mappings.filter(mapping => mapping.tinyUrl !== tinyUrl)
-  //   });
-  // }
 
   statsTinyUrl(tinyUrl: string): void {
     throw new Error('Method not implemented.');

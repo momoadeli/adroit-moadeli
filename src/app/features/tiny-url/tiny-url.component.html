@@ -32,11 +32,10 @@
                     </mat-error>
                 </mat-form-field>
                 <mat-error *ngIf="tinyUrlAlreadyExists">
-                    urll already exists
+                    url already exists
                 </mat-error>
 
-                <button mat-button aria-label="Shorten URL"
-                    [disabled]="urlEntryFormGroup.invalid">
+                <button mat-button aria-label="Shorten URL" [disabled]="urlEntryFormGroup.invalid">
                     <mat-icon>send</mat-icon>
                 </button>
 
@@ -65,12 +64,19 @@
                 <button type="button" mat-raised-button color="primary" aria-label="Go" (click)="goToUrl()">
                     Go To Url
                 </button>
-                <button type="button" *ngIf="viewData.user.userName" mat-raised-button color="primary" aria-label="Stats" (click)="statsTinyUrl()">
-                    Stats
-                </button>
-                <button type="button" *ngIf="viewData.user.userName" mat-raised-button color="primary" aria-label="Delete" (click)="deleteTinyUrl()">
-                    Delete
-                </button>
+                <ng-container *ngIf="viewData.user.userName">
+                    <button type="button" mat-raised-button color="primary" aria-label="Delete"
+                        (click)="deleteTinyUrl()">
+                        Delete
+                    </button>
+                </ng-container>
+            </div>
+            <div *ngIf="viewData.user.userName && viewData.currentTinyUrlMap.clickCount >= 0">
+                <mat-card class="additional-card">
+                    <mat-card-content>
+                        <p>Number of 'clicks': {{viewData.currentTinyUrlMap.clickCount}}</p>
+                    </mat-card-content>
+                </mat-card>
             </div>
         </div>
     </form>
