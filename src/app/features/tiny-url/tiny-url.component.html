@@ -71,7 +71,7 @@
                     </button>
                 </ng-container>
             </div>
-            <div *ngIf="viewData.user.userName && viewData.currentTinyUrlMap.clickCount >= 0">
+            <div *ngIf="viewData.currentTinyUrlMap && viewData.currentTinyUrlMap.clickCount >= 0">
                 <mat-card class="additional-card">
                     <mat-card-content>
                         <p>Number of 'clicks': {{viewData.currentTinyUrlMap.clickCount}}</p>
