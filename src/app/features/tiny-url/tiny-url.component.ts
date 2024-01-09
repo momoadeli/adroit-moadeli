@@ -60,7 +60,7 @@ export class TinyUrlComponent {
 
   createUrlEntryForm(): void {
     this.urlEntryFormGroup = this._fb.group({
-      url: ['http://example.com', { validators: [Validators.required, Validators.maxLength(TINY_URL_CONSTANT.URL_MAX_LENGTH), urlValidator] }],
+      url: ['', { validators: [Validators.required, Validators.maxLength(TINY_URL_CONSTANT.URL_MAX_LENGTH), urlValidator] }],
       alias: ['', { validators: [Validators.maxLength(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH)] }],
       tinyUrl: ['']
     });

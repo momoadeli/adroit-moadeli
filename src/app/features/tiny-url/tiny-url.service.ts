@@ -5,6 +5,7 @@ import * as TINY_URL_CONSTANT from './tiny-url.constant';
 import { generateRandomNumericString } from 'src/app/shared/utils/randomNumericString.function';
 import { UserService } from 'src/app/user.service';
 import { IUser } from 'src/app/user.interface';
+import { convertToValidUrl } from 'src/app/shared/utils/convert-to-url.function';
 
 const initialState: ITinyUrlAllMappings = {
   mappings: []
@@ -59,34 +60,39 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
 
   goToUrl(tinyUrl: string): void {
     const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);
+    let longUrl: string;
 
     if (mappingIndex !== -1) {
       const updatedMappings = [...this.state.mappings];
+      longUrl = updatedMappings[mappingIndex].url as string;
       updatedMappings[mappingIndex] = {
         ...updatedMappings[mappingIndex],
         clickCount: updatedMappings[mappingIndex].clickCount + 1
       };
-  
+
       this.setState({
         ...this.state,
         mappings: updatedMappings
       });
+
+      if (longUrl) {
+        window.open(convertToValidUrl(longUrl) as string, '_blank');
+      }
     }
-    
-    window.open(tinyUrl, '_blank');
+
   }
 
   deleteTinyUrl(tinyUrl: string): void {
     if (!this._currentUser) {
       throw new Error('User not logged in.');
     }
-  
+
     const mapping = this.state.mappings.find(mapping => mapping.tinyUrl === tinyUrl);
-  
+
     if (!mapping || mapping.userName !== this._currentUser.userName) {
       throw new Error('Unauthorized or non-existent tiny URL.');
     }
-  
+
     this.setState({
       ...this.state,
       mappings: this.state.mappings.filter(m => m !== mapping)
@@ -100,6 +106,5 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
   existsTinyUrl(tinyUrl: string): void {
     throw new Error('Method not implemented.');
   }
-
 }
 

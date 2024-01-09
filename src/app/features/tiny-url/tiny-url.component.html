@@ -62,7 +62,7 @@
                 </mat-form-field>
 
                 <button type="button" mat-raised-button color="primary" aria-label="Go" (click)="goToUrl()">
-                    Go To Url
+                    Go To True Url
                 </button>
                 <ng-container *ngIf="viewData.user.userName">
                     <button type="button" mat-raised-button color="primary" aria-label="Delete"
@@ -75,6 +75,7 @@
                 <mat-card class="additional-card">
                     <mat-card-content>
                         <p>Number of 'clicks': {{viewData.currentTinyUrlMap.clickCount}}</p>
+                        <p>Long Url is: {{viewData.currentTinyUrlMap.url}}</p>
                     </mat-card-content>
                 </mat-card>
             </div>
