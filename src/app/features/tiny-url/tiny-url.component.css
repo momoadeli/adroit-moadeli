@@ -50,3 +50,20 @@ mat-form-field:last-child {
 .copy-button {
     text-align: center;
 }
+
+.tiny-url-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px; /* Adds space above the new section */
+}
+
+.tiny-url-container mat-form-field {
+    flex: 3;
+    margin-right: 10px;
+}
+
+.tiny-url-container button {
+    flex: 1;
+    margin-left: 5px; /* Space between buttons */
+}

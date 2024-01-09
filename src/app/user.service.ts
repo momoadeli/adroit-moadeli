@@ -4,8 +4,8 @@ import { IUser } from './user.interface';
 
 const initialState: IUser = {
   userName: null,
-  email: '',
-  password: ''
+  email: null,
+  password: null
 };
 
 @Injectable({
@@ -13,7 +13,7 @@ const initialState: IUser = {
 })
 export class UserService extends ODSState<IUser> {
 
-  user$ = this.select(state => state);
+  readonly user$ = this.select(state => state);
 
   constructor() {
     super(initialState)

@@ -1,8 +1,8 @@
-<ng-container *ngIf="user$ | async as userInfo">
+<ng-container *ngIf="viewData$ | async as viewData">
     <mat-toolbar color="primary">
         <span>URL Shortener</span>
-        <ng-container *ngIf="userInfo.userName; else loginTemplate">
-            <span class="login-button">{{ userInfo.userName }}</span>
+        <ng-container *ngIf="viewData.user.userName; else loginTemplate">
+            <span class="login-button">{{ viewData.user.userName }}</span>
         </ng-container>
 
         <ng-template #loginTemplate>
@@ -19,33 +19,58 @@
                     <mat-error *ngIf="urlEntryFormGroup.get('url')?.errors?.['invalidUrl']">
                         Please enter a valid URL
                     </mat-error>
+                    <mat-error *ngIf="tinyUrlAlreadyExists">
+                        Tiny URL already exists
+                    </mat-error>
                 </mat-form-field>
 
                 <mat-form-field appearance="fill">
                     <mat-label for="alias">Custom Alias</mat-label>
-                    <input matInput formControlName="alias" placeholder="my-custom-alias">
+                    <input matInput formControlName="alias" placeholder="enter alias ">
                     <mat-error *ngIf="urlEntryFormGroup.get('alias')?.errors?.['invalidAlias']">
                         Please enter a valid alias
                     </mat-error>
                 </mat-form-field>
+                <mat-error *ngIf="tinyUrlAlreadyExists">
+                    urll already exists
+                </mat-error>
 
-                <button mat-button matSuffix aria-label="Shorten URL" (click)="onSubmit()">
+                <button mat-button aria-label="Shorten URL"
+                    [disabled]="urlEntryFormGroup.invalid">
                     <mat-icon>send</mat-icon>
                 </button>
+
             </div>
 
             <mat-card>
                 <mat-card-content>
                     <p>Your Shortened URL:</p>
                     <div class="url-container">
-                        <span class="shortenedUrl">https://tiny.url/abc123</span>
+                        <span class="shortenedUrl">{{viewData?.currentTinyUrlMap?.tinyUrl}}</span>
                     </div>
-                    <div class="copy-button">
-                        <button mat-button (click)="copyToClipboard()">
+                    <div *ngIf="currentTinyUrl" class="copy-button">
+                        <button type="button" mat-raised-button (click)="copyToClipboard()">
                             Copy to Clipboard
                         </button>
                     </div>
                 </mat-card-content>
             </mat-card>
+
+            <div class="tiny-url-container">
+                <mat-form-field appearance="fill">
+                    <mat-label for="tinyUrl">Enter TinyURL</mat-label>
+                    <input matInput formControlName="tinyUrl" placeholder="https://tinyurl/xyz...">
+                </mat-form-field>
+
+                <button type="button" mat-raised-button color="primary" aria-label="Go" (click)="goToUrl()">
+                    Go To Url
+                </button>
+                <button type="button" *ngIf="viewData.user.userName" mat-raised-button color="primary" aria-label="Stats" (click)="statsTinyUrl()">
+                    Stats
+                </button>
+                <button type="button" *ngIf="viewData.user.userName" mat-raised-button color="primary" aria-label="Delete" (click)="deleteTinyUrl()">
+                    Delete
+                </button>
+            </div>
         </div>
     </form>

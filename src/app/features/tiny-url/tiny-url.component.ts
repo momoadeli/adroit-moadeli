@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { debounceTime, tap } from 'rxjs';
+import { combineLatest, debounceTime, map, tap } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import * as TINY_URL_CONSTANT from './tiny-url.constant';
 import * as USER_CONSTANT from 'src/app/user.constant';
@@ -22,42 +22,77 @@ export class TinyUrlComponent {
   private readonly _userService = inject(UserService);
   urlEntryFormGroup!: FormGroup;
   TINY_URL_CONSTANT = TINY_URL_CONSTANT;
-  user$ = this._userService.user$;
+  private readonly _user$ = this._userService.user$;
+  private readonly _tinyUrlMapping$ = this._tinyUrlService.tinyUrlMapping$;
+  private readonly _currentTinyUrlMap$ = this._tinyUrlService.currentTinyUrlMap$.pipe(
+    tap((currentTinyUrlMap) => this.currentTinyUrl = currentTinyUrlMap?.tinyUrl),
+    tap((currentTinyUrlMap) => this.urlEntryFormGroup.patchValue({ tinyUrl: currentTinyUrlMap?.tinyUrl })),
+  );
+  viewData$ = combineLatest([this._user$, this._tinyUrlMapping$, this._currentTinyUrlMap$]).pipe(
+    map(([user, tinyUrlMapping, currentTinyUrlMap]) => ({ user, tinyUrlMapping, currentTinyUrlMap }))
+  );
+  currentTinyUrl!: string | null;
+
+  tinyUrlAlreadyExists = false;
 
   constructor() {
     this.createUrlEntryForm();
-    this.user$.pipe(
-      tap((user) => console.log(user)),
-      takeUntilDestroyed(this._destroyRef)
+
+    this._tinyUrlMapping$.pipe(
+      tap((val) => console.log(val)),
     ).subscribe();
   }
 
-  copyToClipboard() {
-    throw new Error('Method not implemented.');
+  copyToClipboard(): void {
+    if (typeof this.currentTinyUrl === 'string' && this.currentTinyUrl.length > 0) {
+      navigator.clipboard.writeText(this.currentTinyUrl)
+        .then(() => {
+          console.log('URL copied to clipboard!');
+        })
+        .catch(err => {
+          console.error('Failed to copy URL: ', err);
+        });
+    } else {
+      console.error('No URL to copy');
+    }
   }
+
 
   createUrlEntryForm(): void {
     this.urlEntryFormGroup = this._fb.group({
-      url: ['', { validators: [Validators.required, Validators.maxLength(TINY_URL_CONSTANT.URL_MAX_LENGTH), urlValidator] }],
-      alias: ['', { validators: [Validators.maxLength(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH)] }]
+      url: ['http://example.com', { validators: [Validators.required, Validators.maxLength(TINY_URL_CONSTANT.URL_MAX_LENGTH), urlValidator] }],
+      alias: ['', { validators: [Validators.maxLength(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH)] }],
+      tinyUrl: ['']
     });
-
-    this.urlEntryFormGroup.valueChanges.pipe(
-      debounceTime(TINY_URL_CONSTANT.DEBOUNCE_TIME),
-      tap((value) => {
-        console.log(value);
-        this._tinyUrlService.tinyUrl = value.url;
-      }),
-      takeUntilDestroyed(this._destroyRef)
-    ).subscribe()
   }
 
-  onSubmit() {
+  onSubmit(): void {
+    try {
+      this._tinyUrlService.createTinyUrl(this.urlEntryFormGroup.value);
+    } catch (error) {
+      console.error('momo' + error);
+      this.tinyUrlAlreadyExists = true;
+    }
+  }
+
+  login(): void {
+    this._userService.login({ userName: USER_CONSTANT.USER_NAME, email: 'megabyzus@gmail.com', password: '24365243!@#' });
+  }
+
+  deleteTinyUrl(): void {
+    if (this.currentTinyUrl) {
+      this._tinyUrlService.deleteTinyUrl(this.currentTinyUrl);
+      this.tinyUrlAlreadyExists = false;
+    }
+  }
+
+  statsTinyUrl(): void {
     throw new Error('Method not implemented.');
   }
 
-  login() {
-    this._userService.login({ userName: USER_CONSTANT.USER_NAME, email: '', password: '' });
+  goToUrl(): void {
+    if (typeof this.currentTinyUrl === 'string' && this.currentTinyUrl) {
+      this._tinyUrlService.goToUrl(this.currentTinyUrl);
+    }
   }
-
 }
