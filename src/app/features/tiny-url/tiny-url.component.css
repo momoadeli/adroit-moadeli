@@ -2,22 +2,51 @@
     width: 80%;
     margin: 20px auto;
     text-align: center;
-  }
-  
-  mat-form-field {
+}
+
+mat-toolbar {
+    display: flex;
+    justify-content: space-between;
+    /* Aligns items on both ends */
+    align-items: center;
+}
+
+.login-button {
+    margin-left: auto;
+    /* Pushes the button to the right */
+}
+
+
+.form-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     width: 100%;
-  }
-  
-  .url-container {
-    margin-bottom: 10px; /* Adds space between the URL and the button */
-  }
-  
-  .shortenedUrl {
-    display: block; /* Makes the URL display on its own line */
-    margin-bottom: 5px; /* Optional: Adds some space below the URL */
-  }
-  
-  .copy-button {
-    text-align: center; /* Centers the button */
-  }
-  
+}
+
+mat-form-field:first-child {
+    flex: 3;
+    /* URL field is three times larger than the alias field */
+    margin-right: 10px;
+    /* Adds some space between the fields */
+}
+
+mat-form-field:last-child {
+    flex: 1;
+    /* Alias field */
+    margin-right: 10px;
+    /* Adds some space between the field and the button */
+}
+
+ƒ .url-container {
+    margin-bottom: 10px;
+}
+
+.shortenedUrl {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.copy-button {
+    text-align: center;
+}
