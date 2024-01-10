@@ -6,7 +6,6 @@ import { generateRandomNumericString } from 'src/app/shared/utils/randomNumericS
 import { UserService } from 'src/app/user.service';
 import { IUser } from 'src/app/user.interface';
 import { convertToValidUrl } from 'src/app/shared/utils/convert-to-url.function';
-import { map, tap } from 'rxjs';
 
 const initialState: ITinyUrlAllMappings = {
   mappings: [],
@@ -96,63 +95,6 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
       ...this.state
     });
   }
-
-  // createTinyUrl(userInput: ITinyUrlMapping): void {
-  //   const { url, alias } = userInput;
-  //   let newAlias = alias;
-
-  //   if (newAlias && this.state.aliasToTinyUrlMap.has(newAlias)) {
-  //     throw new Error('Alias already exists.');
-  //   }
-
-  //   if (!newAlias) {
-  //     newAlias = generateRandomNumericString(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH);
-  //   }
-
-  //   const newMapping: ITinyUrlMapping = {
-  //     url,
-  //     tinyUrl: 'http://tinyurl.com/' + newAlias,
-  //     alias: newAlias,
-  //     userName: this._currentUser.userName,
-  //     clickCount: 0
-  //   };
-
-  //   this.state.mappings.push(newMapping);
-  //   this.state.aliasToTinyUrlMap.set(newAlias, newMapping.tinyUrl as string);
-
-  //   this.setState({
-  //     ...this.state
-  //   });
-  // }
-
-  // deleteTinyUrl(tinyUrl: string): void {
-  //   if (!this._currentUser) {
-  //     throw new Error('User not logged in.');
-  //   }
-
-  //   const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);
-
-  //   if (mappingIndex === -1) {
-  //     throw new Error('Tiny URL does not exist.');
-  //   }
-
-  //   const mapping = this.state.mappings[mappingIndex];
-
-  //   if (mapping.userName !== this._currentUser.userName) {
-  //     throw new Error('Unauthorized to delete this tiny URL.');
-  //   }
-
-  //   const updatedMappings = [...this.state.mappings.slice(0, mappingIndex), ...this.state.mappings.slice(mappingIndex + 1)];
-
-  //   if (mapping.alias) {
-  //     this.state.aliasToTinyUrlMap.delete(mapping.alias);
-  //   }
-
-  //   this.setState({
-  //     ...this.state,
-  //     mappings: updatedMappings
-  //   });
-  // }
 
   goToUrl(tinyUrl: string): void {
     const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);

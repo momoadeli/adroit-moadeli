@@ -7,13 +7,11 @@
 mat-toolbar {
     display: flex;
     justify-content: space-between;
-    /* Aligns items on both ends */
     align-items: center;
 }
 
 .login-button {
     margin-left: auto;
-    /* Pushes the button to the right */
 }
 
 
@@ -26,16 +24,12 @@ mat-toolbar {
 
 mat-form-field:first-child {
     flex: 3;
-    /* URL field is three times larger than the alias field */
     margin-right: 10px;
-    /* Adds some space between the fields */
 }
 
 mat-form-field:last-child {
     flex: 1;
-    /* Alias field */
     margin-right: 10px;
-    /* Adds some space between the field and the button */
 }
 
 .url-container {
@@ -55,7 +49,7 @@ mat-form-field:last-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 20px; /* Adds space above the new section */
+    margin-top: 20px;
 }
 
 .tiny-url-container mat-form-field {
@@ -65,7 +59,7 @@ mat-form-field:last-child {
 
 .tiny-url-container button {
     flex: 1;
-    margin-left: 5px; /* Space between buttons */
+    margin-left: 5px;
 }
 
 .additional-card {

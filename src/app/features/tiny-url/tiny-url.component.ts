@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { combineLatest, debounceTime, map, tap } from 'rxjs';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest, map, tap } from 'rxjs';
 import * as TINY_URL_CONSTANT from './tiny-url.constant';
 import * as USER_CONSTANT from 'src/app/user.constant';
 import { urlValidator } from 'src/app/shared/validators/url.validator';
