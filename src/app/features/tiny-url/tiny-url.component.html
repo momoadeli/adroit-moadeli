@@ -14,7 +14,7 @@
         <div class="container">
             <div class="form-container">
                 <mat-form-field appearance="fill">
-                    <mat-label for="url">Enter your URL here</mat-label>
+                    <mat-label for="url">Enter long link here</mat-label>
                     <input matInput formControlName="url" placeholder="https://example.com">
                     <mat-error *ngIf="urlEntryFormGroup.get('url')?.errors?.['invalidUrl']">
                         Please enter a valid URL
@@ -32,7 +32,7 @@
                     </mat-error>
                 </mat-form-field>
                 <mat-error *ngIf="tinyUrlAlreadyExists">
-                    url already exists
+                    URL or alias already exist
                 </mat-error>
 
                 <button mat-button aria-label="Shorten URL" [disabled]="urlEntryFormGroup.invalid">
@@ -57,7 +57,7 @@
 
             <div class="tiny-url-container">
                 <mat-form-field appearance="fill">
-                    <mat-label for="tinyUrl">Enter TinyURL</mat-label>
+                    <!-- <mat-label for="tinyUrl">Your new TinyURL</mat-label> -->
                     <input matInput formControlName="tinyUrl" placeholder="https://tinyurl/xyz...">
                 </mat-form-field>
 

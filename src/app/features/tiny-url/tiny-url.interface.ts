@@ -8,6 +8,8 @@ export interface ITinyUrlMapping {
 
 export interface ITinyUrlAllMappings {
     mappings: ITinyUrlMapping[];
+    aliasToTinyUrlMap: Map<string, string>;
+    tinyUrlToAliasMap: Map<string, string>;
 }
 
 export interface ITinyUrlStats {

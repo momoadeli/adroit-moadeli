@@ -6,9 +6,12 @@ import { generateRandomNumericString } from 'src/app/shared/utils/randomNumericS
 import { UserService } from 'src/app/user.service';
 import { IUser } from 'src/app/user.interface';
 import { convertToValidUrl } from 'src/app/shared/utils/convert-to-url.function';
+import { map, tap } from 'rxjs';
 
 const initialState: ITinyUrlAllMappings = {
-  mappings: []
+  mappings: [],
+  aliasToTinyUrlMap: new Map(),
+  tinyUrlToAliasMap: new Map()
 };
 
 @Injectable()
@@ -35,28 +38,121 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
 
   createTinyUrl(userInput: ITinyUrlMapping): void {
     const { url, alias } = userInput;
+    let newAlias = alias;
 
-    const existingMapping = this.state.mappings.find(
-      m => m.url === url || (alias && m.alias === alias)
-    );
+    if (newAlias && this.state.aliasToTinyUrlMap.has(newAlias)) {
+      throw new Error('Alias already exists.');
+    }
 
-    if (existingMapping) {
-      throw new Error('URL or alias already exists.');
+    if (!newAlias) {
+      newAlias = generateRandomNumericString(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH);
     }
 
     const newMapping: ITinyUrlMapping = {
       url,
-      tinyUrl: 'http://tinyurl.com/' + (alias ? alias : generateRandomNumericString(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH)),
-      alias,
+      tinyUrl: 'http://tinyurl.com/' + newAlias,
+      alias: newAlias,
       userName: this._currentUser.userName,
       clickCount: 0
     };
 
+    this.state.mappings.push(newMapping);
+
+    if (newMapping.tinyUrl) {
+      this.state.aliasToTinyUrlMap.set(newAlias, newMapping.tinyUrl);
+      this.state.tinyUrlToAliasMap.set(newMapping.tinyUrl, newAlias);
+    }
+
     this.setState({
-      ...this.state,
-      mappings: [...this.state.mappings, newMapping]
+      ...this.state
     });
   }
+
+  deleteTinyUrl(tinyUrl: string): void {
+    if (!this._currentUser) {
+      throw new Error('User not logged in.');
+    }
+
+    const alias = this.state.tinyUrlToAliasMap.get(tinyUrl);
+    if (!alias) {
+      throw new Error('Tiny URL does not exist.');
+    }
+
+    const mappingIndex = this.state.mappings.findIndex(m => m.tinyUrl === tinyUrl);
+    if (mappingIndex === -1) {
+      throw new Error('Tiny URL does not exist in the mappings array.');
+    }
+
+    const mapping = this.state.mappings[mappingIndex];
+    if (mapping.userName !== this._currentUser.userName) {
+      throw new Error('Unauthorized to delete this tiny URL.');
+    }
+
+    this.state.mappings.splice(mappingIndex, 1);
+    this.state.aliasToTinyUrlMap.delete(alias);
+    this.state.tinyUrlToAliasMap.delete(tinyUrl);
+
+    this.setState({
+      ...this.state
+    });
+  }
+
+  // createTinyUrl(userInput: ITinyUrlMapping): void {
+  //   const { url, alias } = userInput;
+  //   let newAlias = alias;
+
+  //   if (newAlias && this.state.aliasToTinyUrlMap.has(newAlias)) {
+  //     throw new Error('Alias already exists.');
+  //   }
+
+  //   if (!newAlias) {
+  //     newAlias = generateRandomNumericString(TINY_URL_CONSTANT.ALIAS_MAX_LENGTH);
+  //   }
+
+  //   const newMapping: ITinyUrlMapping = {
+  //     url,
+  //     tinyUrl: 'http://tinyurl.com/' + newAlias,
+  //     alias: newAlias,
+  //     userName: this._currentUser.userName,
+  //     clickCount: 0
+  //   };
+
+  //   this.state.mappings.push(newMapping);
+  //   this.state.aliasToTinyUrlMap.set(newAlias, newMapping.tinyUrl as string);
+
+  //   this.setState({
+  //     ...this.state
+  //   });
+  // }
+
+  // deleteTinyUrl(tinyUrl: string): void {
+  //   if (!this._currentUser) {
+  //     throw new Error('User not logged in.');
+  //   }
+
+  //   const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);
+
+  //   if (mappingIndex === -1) {
+  //     throw new Error('Tiny URL does not exist.');
+  //   }
+
+  //   const mapping = this.state.mappings[mappingIndex];
+
+  //   if (mapping.userName !== this._currentUser.userName) {
+  //     throw new Error('Unauthorized to delete this tiny URL.');
+  //   }
+
+  //   const updatedMappings = [...this.state.mappings.slice(0, mappingIndex), ...this.state.mappings.slice(mappingIndex + 1)];
+
+  //   if (mapping.alias) {
+  //     this.state.aliasToTinyUrlMap.delete(mapping.alias);
+  //   }
+
+  //   this.setState({
+  //     ...this.state,
+  //     mappings: updatedMappings
+  //   });
+  // }
 
   goToUrl(tinyUrl: string): void {
     const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);
@@ -80,31 +176,6 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
       }
     }
 
-  }
-
-  deleteTinyUrl(tinyUrl: string): void {
-    if (!this._currentUser) {
-      throw new Error('User not logged in.');
-    }
-
-    const mapping = this.state.mappings.find(mapping => mapping.tinyUrl === tinyUrl);
-
-    if (!mapping || mapping.userName !== this._currentUser.userName) {
-      throw new Error('Unauthorized or non-existent tiny URL.');
-    }
-
-    this.setState({
-      ...this.state,
-      mappings: this.state.mappings.filter(m => m !== mapping)
-    });
-  }
-
-  statsTinyUrl(tinyUrl: string): void {
-    throw new Error('Method not implemented.');
-  }
-
-  existsTinyUrl(tinyUrl: string): void {
-    throw new Error('Method not implemented.');
   }
 }
 
