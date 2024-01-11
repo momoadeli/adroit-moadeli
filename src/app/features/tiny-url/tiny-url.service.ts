@@ -58,8 +58,9 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
     this.state.mappings.push(newMapping);
 
     if (newMapping.tinyUrl) {
-      this.state.aliasToTinyUrlMap.set(newAlias, newMapping.tinyUrl);
-      this.state.tinyUrlToAliasMap.set(newMapping.tinyUrl, newAlias);
+      this.state.aliasToTinyUrlMap.set(newMapping.alias as string, newMapping);
+      this.state.tinyUrlToAliasMap.set(newMapping.tinyUrl, newMapping);
+  
     }
 
     this.setState({
@@ -69,32 +70,31 @@ export class TinyUrlService extends ODSState<ITinyUrlAllMappings>{
 
   deleteTinyUrl(tinyUrl: string): void {
     if (!this._currentUser) {
-      throw new Error('User not logged in.');
+        throw new Error('User not logged in.');
     }
 
-    const alias = this.state.tinyUrlToAliasMap.get(tinyUrl);
-    if (!alias) {
-      throw new Error('Tiny URL does not exist.');
+    const mapping = this.state.tinyUrlToAliasMap.get(tinyUrl);
+    if (!mapping) {
+        throw new Error('Tiny URL does not exist.');
     }
 
-    const mappingIndex = this.state.mappings.findIndex(m => m.tinyUrl === tinyUrl);
-    if (mappingIndex === -1) {
-      throw new Error('Tiny URL does not exist in the mappings array.');
-    }
-
-    const mapping = this.state.mappings[mappingIndex];
     if (mapping.userName !== this._currentUser.userName) {
-      throw new Error('Unauthorized to delete this tiny URL.');
+        throw new Error('Unauthorized to delete this tiny URL.');
     }
 
-    this.state.mappings.splice(mappingIndex, 1);
-    this.state.aliasToTinyUrlMap.delete(alias);
+    // Delete the mapping from both maps
+    this.state.aliasToTinyUrlMap.delete(mapping.alias as string);
     this.state.tinyUrlToAliasMap.delete(tinyUrl);
 
+    // Remove the mapping from the array
+    const updatedMappings = this.state.mappings.filter(m => m.tinyUrl !== tinyUrl);
+
+    // Update the state with the new mappings
     this.setState({
-      ...this.state
+        ...this.state,
+        mappings: updatedMappings
     });
-  }
+}
 
   goToUrl(tinyUrl: string): void {
     const mappingIndex = this.state.mappings.findIndex(mapping => mapping.tinyUrl === tinyUrl);
